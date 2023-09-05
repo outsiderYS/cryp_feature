@@ -1,0 +1,7 @@
+('c:\\users\\ys\\miniconda3\\lib\\site-packages\\python_dateutil-2.8.2-py3.9.egg',
+ None,
+ {'EGG-INFO', '*.pyc', '*.pyd', '*.cp39-win_amd64.pyd', '*.pyw', '*.py'},
+ 'DATA',
+ [('dateutil\\zoneinfo\\dateutil-zoneinfo.tar.gz',
+   'c:\\users\\ys\\miniconda3\\lib\\site-packages\\python_dateutil-2.8.2-py3.9.egg\\dateutil\\zoneinfo\\dateutil-zoneinfo.tar.gz',
+   'DATA')])

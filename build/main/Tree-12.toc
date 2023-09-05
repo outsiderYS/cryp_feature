@@ -1,0 +1,10 @@
+('c:\\users\\ys\\miniconda3\\lib\\site-packages\\kiwisolver-1.4.4-py3.9-win-amd64.egg',
+ None,
+ {'*.cp39-win_amd64.pyd', 'EGG-INFO', '*.pyw', '*.pyd', '*.py', '*.pyc'},
+ 'DATA',
+ [('kiwisolver\\py.typed',
+   'c:\\users\\ys\\miniconda3\\lib\\site-packages\\kiwisolver-1.4.4-py3.9-win-amd64.egg\\kiwisolver\\py.typed',
+   'DATA'),
+  ('kiwisolver\\_cext.pyi',
+   'c:\\users\\ys\\miniconda3\\lib\\site-packages\\kiwisolver-1.4.4-py3.9-win-amd64.egg\\kiwisolver\\_cext.pyi',
+   'DATA')])

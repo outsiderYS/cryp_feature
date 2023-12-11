@@ -410,8 +410,8 @@ def encrypt_select(data, algorithm, mode='ECB'):
 
 if __name__ == '__main__':
     # AES,IDEA,TRIPLE_DES支持ECB,CBC,CFB,OFB模式,其中仅AES可以使用CTR
-    # private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
-    # public_key = private_key.public_key()
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
+    public_key = private_key.public_key()
     # rsa_ciphertext_gen(public_key)
     # triple_des_ciphertext_gen(key_128, 'ECB')
     # idea_ciphertext_gen(key_128, 'ECB')

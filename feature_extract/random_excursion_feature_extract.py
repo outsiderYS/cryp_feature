@@ -44,7 +44,6 @@ def random_excursion_test(bits):
         pos = pos + 1
 
     J = len(cycles)
-    print("J=" + str(J))
 
     vxk = [['a', 'b', 'c', 'd', 'e', 'f'] for y in [-4, -3, -2, -1, 1, 2, 3, 4]]
 
@@ -93,18 +92,6 @@ def random_excursion_test(bits):
             chisq += top / bottom
         p = gammaincc(5.0 / 2.0, chisq / 2.0)
         plist.append(p)
-        if p < 0.01:
-            err = " Not Random"
-            success = False
-        else:
-            err = ""
-        print("x = %1.0f\tchisq = %f\tp = %f %s" % (x, chisq, p, err))
-    if (J < 500):
-        print("J too small (J < 500) for result to be reliable")
-    elif success:
-        print("PASS")
-    else:
-        print("FAIL: Data not random")
     return plist
 
 

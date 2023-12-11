@@ -60,11 +60,9 @@ def maurers_universal_test(bits, patternlen=None, initblocks=None):
         dist = i + 1 - T[j]
         T[j] = i + 1
         sum = sum + math.log(dist, 2)
-    print("  sum =", sum)
 
     # Step 5 Compute the test statistic
     fn = sum / K
-    print("  fn =", fn)
 
     # Step 6 Compute the P Value
     # Tables from https://static.aminer.org/pdf/PDF/000/120/333/

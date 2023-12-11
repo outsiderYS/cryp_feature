@@ -53,10 +53,6 @@ def linear_complexity_test(bits, patternlen=None):
         M = 512
     K = 6
     N = int(math.floor(n / M))
-    print("  M = ", M)
-    print("  N = ", N)
-    print("  K = ", K)
-
     # Step 2 Compute the linear complexity of the blocks
     LC = list()
     for i in range(N):
@@ -97,10 +93,8 @@ def linear_complexity_test(bits, patternlen=None):
     chisq = 0.0
     for i in range(K + 1):
         chisq += ((v[i] - (N * pi[i])) ** 2.0) / (N * pi[i])
-    print("  chisq = ", chisq)
     # Step 6 Compute P Value
     P = gammaincc((K / 2.0), (chisq / 2.0))
-    print("  P = ", P)
     success = (P >= 0.01)
     return P
 

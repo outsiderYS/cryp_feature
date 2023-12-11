@@ -113,11 +113,6 @@ def longest_run_ones_in_a_block_test(bits):
         upper = (v[i] - N * p_i) ** 2
         lower = N * p_i
         chi_sq += upper / lower
-    print("  n = " + str(n))
-    print("  K = " + str(K))
-    print("  M = " + str(M))
-    print("  N = " + str(N))
-    print("  chi_sq = " + str(chi_sq))
     p = gammaincc(K / 2.0, chi_sq / 2.0)
 
     success = (p >= 0.01)

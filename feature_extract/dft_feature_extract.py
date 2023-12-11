@@ -25,13 +25,11 @@ def dft_test(bits):
 
     T = math.sqrt(math.log(1.0 / 0.05) * n)  # Compute upper threshold
     N0 = 0.95 * n / 2.0
-    print("  N0 = %f" % N0)
 
     N1 = 0.0  # Count the peaks above the upper theshold
     for mag in mags:
         if mag < T:
             N1 += 1.0
-    print("  N1 = %f" % N1)
     d = (N1 - N0) / math.sqrt((n * 0.95 * 0.05) / 4)  # Compute the P value
     p = math.erfc(abs(d) / math.sqrt(2))
 

@@ -162,10 +162,6 @@ def non_overlapping_template_matching_test(bits, temp_select=0):
         sum = 0
         chi2 = 0.0
         for i in range(N):
-            if m == 10:
-                print()
-            else:
-                print()
             chi2 += ((W[i] - lam) / math.sqrt(varWj)) ** 2
 
         p = 1 - gammainc(N / 2.0, chi2 / 2.0)

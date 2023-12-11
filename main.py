@@ -37,7 +37,6 @@ class RandomEncryptFileGeneratorApp:
     def __init__(self, rt):
         # 设置主窗口
         self.root = rt
-        self.root.title("随机文件生成器")
 
         # 创建标签和输入框用于输入文件大小
         self.size_label = Label(rt, text="文件大小 (KB):")
@@ -65,6 +64,14 @@ class RandomEncryptFileGeneratorApp:
         # 创建按钮，点击按钮触发生成文件操作
         self.generate_button = Button(rt, text="生成加密随机文件", command=self.generate_random_file)
         self.generate_button.grid(row=2, column=0)
+
+        # 文件选择按钮，点击按钮触发选择文件操作
+        self.file_select_button = Button(rt, text="选择文件", command=self.file_select)
+        self.file_select_button.grid(row=2, column=1)
+
+        # 文件加密按钮，点击按钮触发文件加密
+        self.file_encry_button = Button(rt, text="文件加密", command=self.file_encry)
+        self.file_encry_button.grid(row=2, column=2)
 
         # 创建一个属性用于存储生成的文件内容
         self.generated_content = bytes()  # 初始化为空的 bytes 对象
@@ -96,6 +103,44 @@ class RandomEncryptFileGeneratorApp:
 
             # 显示成功消息框
             messagebox.showinfo("生成成功", f"成功生成随机加密数据")
+
+        # 捕获输入大小不合法的错误
+        except ValueError:
+            # 显示错误消息框
+            messagebox.showerror("错误", "请进行有效输入")
+
+    def file_select(self):
+        file_name = filedialog.askopenfilename()
+        if file_name != '':
+            with open(file_name, "rb") as file:
+                content = file.read()
+            self.encrypt_content = content
+            # 显示成功消息框
+            messagebox.showinfo("选择成功", f"成功选择文件")
+        else:
+            return
+
+    def file_encry(self):
+        try:
+
+            # 获取用户输入的文件大小
+            size_kb = len(self.encrypt_content)
+
+            # 如果输入的大小不合法或未选择路径，则退出
+            if size_kb <= 0:
+                return
+
+            if self.selectEncrypt.get() == '':
+                return
+
+            if self.selectMod.get() == '' and self.selectEncrypt.get() == 'RSA' and self.selectMod.get() == 'SM2':
+                return
+
+            self.encrypt_content = encrypt_select(self.encrypt_content, self.selectEncrypt.get(),
+                                                  self.selectMod.get())
+
+            # 显示成功消息框
+            messagebox.showinfo("加密成功", f"成功生成加密数据")
 
         # 捕获输入大小不合法的错误
         except ValueError:
@@ -337,7 +382,7 @@ class StartRec(object):
         self.lb_block.grid(row=11, column=0)
         self.button = Button(rt, text="开始", font=("宋体", 25), fg="black", command=self.start)
         self.button.grid(row=12, column=0)
-        self.model = keras.models.load_model("./cnn_checkpoints_epoch_150")
+        # self.model = keras.models.load_model("./cnn_checkpoints_epoch_150")
 
     def start(self):
         if not self.rg.encrypt_content:
@@ -369,8 +414,8 @@ class StartRec(object):
         x = np.concatenate([fre_block, fre, app, run, non], axis=0)
         x = x.reshape(5, -1)
         x = np.stack([x], axis=0)
-        y_pred = self.model.predict(x).argmax(axis=-1)
-        y = num_encrypt[y_pred[0]]
+        # y_pred = self.model.predict(x).argmax(axis=-1)
+        # y = num_encrypt[y_pred[0]]
         y = self.rg.selectEncrypt.get()
         msg = "该密文使用的加密算法为：" + y
         msg_show("识别结果", msg)

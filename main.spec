@@ -6,10 +6,10 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['./feature_extract', './cnn_checkpoints_epoch_150'],
+    pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['gmssl', 'tensorflow.keras'],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

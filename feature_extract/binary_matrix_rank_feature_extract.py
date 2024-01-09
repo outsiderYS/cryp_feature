@@ -19,7 +19,7 @@ def binary_matrix_rank_test(bits, M=32, Q=32):
     if N < 38:
         print("  Number of blocks must be greater than 37")
         p = 0.0
-        return False, p, None
+        return p
 
     # Compute the reference probabilities for FM, FMM and remainder
     r = M

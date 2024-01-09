@@ -1,6 +1,7 @@
 import tkinter
 
 import numpy as np
+import torch
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -19,6 +20,7 @@ from feature_extract import non_overlapping_template_matching_feature_extract
 from feature_extract import overlapping_template_matching_feature_extract
 from feature_extract import random_excursion_feature_extract, random_excursion_variant_feature_extract
 from feature_extract import run_extract, serial_feature_extract
+from stft import bit_process
 import random
 
 from PIL import ImageTk
@@ -26,9 +28,42 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter.ttk import Combobox
+from torchvision.models.densenet import DenseNet
+import torchvision.transforms as transforms
+from PIL import Image
+
 
 file_encoder = {'AES_ECB': 0, 'IDEA_ECB': 1, 'TRIPLE_DES_ECB': 2, 'RSA': 3}
-num_encrypt = {0: 'AES_ECB', 1: 'IDEA_ECB', 2: 'TRIPLE_DES_ECB', 3: 'RSA'}
+num_encrypt = {0: 'AES_ECB', 1: 'IDEA_ECB', 2: 'SM4_ECB', 3: 'TRIPLE_DES_ECB'}
+pretrained_model = './recognition/model/best.pth.tar'
+device = torch.device('cpu')
+model_num_labels = 4
+
+
+def load_checkpoint(checkpoint, model, optimizer=None):
+    """Loads model parameters (state_dict) from file_path. If optimizer is provided, loads state_dict of
+    optimizer assuming it is present in checkpoint.
+
+    Args:
+        checkpoint: (string) filename which needs to be loaded
+        model: (torch.nn.Module) model for which the parameters are loaded
+        optimizer: (torch.optim) optional: resume optimizer from checkpoint
+    """
+
+    if not os.path.exists(checkpoint):
+        raise ("File doesn't exist {}".format(checkpoint))
+    if torch.cuda.is_available():
+        checkpoint = torch.load(checkpoint)
+    else:
+        # this helps avoid errors when loading single-GPU-trained weights onto CPU-model
+        checkpoint = torch.load(checkpoint, map_location=lambda storage, loc: storage)
+
+    model.load_state_dict(checkpoint['model_state_dict'])
+
+    if optimizer:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+    return checkpoint
 
 
 class RandomEncryptFileGeneratorApp:
@@ -382,7 +417,8 @@ class StartRec(object):
         self.lb_block.grid(row=11, column=0)
         self.button = Button(rt, text="开始", font=("宋体", 25), fg="black", command=self.start)
         self.button.grid(row=12, column=0)
-        # self.model = keras.models.load_model("./cnn_checkpoints_epoch_150")
+        self.model = DenseNet(growth_rate=32, block_config=(6, 12, 24, 16),
+                              num_init_features=64, bn_size=4, drop_rate=0.3, num_classes=model_num_labels).to(device)
 
     def start(self):
         if not self.rg.encrypt_content:
@@ -393,30 +429,29 @@ class StartRec(object):
             return
         encrypt = self.rg.encrypt_content
         step = self.st.selectSize.get() * 1024
-        fre_block = []
-        fre = []
-        app = []
-        run = []
-        non = []
-        for i in range(0, 64):
-            single = encrypt[i*step:(i+1)*step]
-            fre_block.append(frequency_within_block_feature_extract.frequency_within_block_test(single))
-            fre.append(frequency_feature_extract.frequency_test(single))
-            app.append(approximate_entropy_feature_extract.approximate_entropy_test(single))
-            run.append(run_extract.runs_test(single))
-            non.extend(non_overlapping_template_matching_feature_extract.non_overlapping_template_matching_test(single))
-        fre_block = sorted(fre_block, reverse=True)
-        fre = sorted(fre, reverse=True)
-        app = sorted(app, reverse=True)
-        run = sorted(run, reverse=True)
-        non = sorted(non, reverse=True)
-        non = non[0:64]
-        x = np.concatenate([fre_block, fre, app, run, non], axis=0)
-        x = x.reshape(5, -1)
-        x = np.stack([x], axis=0)
-        # y_pred = self.model.predict(x).argmax(axis=-1)
-        # y = num_encrypt[y_pred[0]]
-        y = self.rg.selectEncrypt.get()
+        load_checkpoint(pretrained_model, self.model)
+        self.model.eval()
+
+        png_matrix = bit_process.png_maker(encrypt[0: 224 * 224], 224)
+        im = Image.fromarray(png_matrix.astype(np.uint8))
+        # im.save('./temp/temp.png')
+
+        transform = transforms.Compose([
+            transforms.Resize(size=(224, 224), interpolation=3),
+            transforms.ToTensor(),
+        ])
+
+        png_tensor = transform(im)
+        png_tensor = torch.unsqueeze(png_tensor, dim=0)
+
+        y_pred = self.model(png_tensor)
+        y_pred = y_pred[0].tolist()
+
+        max_value = max(y_pred)  # 获取最大值
+        max_index = y_pred.index(max_value)  # 获取最大值所在的位置
+
+        y = num_encrypt[max_index]
+
         msg = "该密文使用的加密算法为：" + y
         msg_show("识别结果", msg)
 

@@ -35,7 +35,7 @@ def runs_test(bits):
     tau = 2.0 / math.sqrt(n)
 
     if abs(prop - 0.5) > tau:
-        return (False, 0.0, None)
+        return 0
 
     vobs = 1.0
     for i in range(n - 1):

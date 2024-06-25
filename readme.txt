@@ -69,16 +69,8 @@ random_excursion_variant_test(bits)
 # 注意输出为一个p-value list,其中包含18个p-value
 input:’rb’		output:list(p-value)
 
-from joblib import dump, load
-# randomforest
-dump(clf, "../checkpoints/rf_checkpoints.joblib") # save
-clf = load("../checkpoints/rf_checkpoints.joblib") # load
 
-import tensorflow as tf
-# save model
-output_path = "../checkpoints/xxx_checkpoints_epoch_150"
-model.save(output_path)
-# load model
-cnn_model = tf.keras.models.load_model("../checkpoints/cnn_checkpoints_epoch_150") # cnn
-bp_model = tf.keras.models.load_model("../checkpoints/bpnn_checkpoints_epoch_150") # bpnn
-lstm = tf.keras.models.load_model("../checkpoints/lstm_checkpoints_epoch_150") # lstm
+dataset,models:
+https://pan.baidu.com/s/1HBHXpkYe-om7PyYrVBvu5A?pwd=xrvo
+
+

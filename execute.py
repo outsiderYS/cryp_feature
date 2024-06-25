@@ -27,6 +27,8 @@ from PIL import Image
 
 file_encoder = {'AES_ECB': 0, 'IDEA_ECB': 1, 'TRIPLE_DES_ECB': 2, 'RSA': 3}
 num_encrypt = {0: 'AES_ECB', 1: 'IDEA_ECB', 2: 'SM4_ECB', 3: 'TRIPLE_DES_ECB'}
+ratio = 0.5
+resolution = 224
 pretrained_model = './recognition/model/best.pth.tar'
 device = torch.device('cpu')
 model_num_labels = 4

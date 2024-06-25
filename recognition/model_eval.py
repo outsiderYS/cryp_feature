@@ -3,10 +3,26 @@ from torchvision.models.densenet import DenseNet
 import torch.optim as optim
 from metrics import *
 from utils import *
+from sklearn.metrics import recall_score, precision_score
+import os
+
+
+labels = [1, 2, 3, 4]
+
+
+def list_get(y_pred, y_test):
+    _, pred = y_pred.topk(1, 1, True, True)
+    pred = pred.t()
+    target = y_test.view(1, -1).expand_as(pred)
+    pred = pred.cpu().numpy()[0]
+    target = target.cpu().numpy()[0]
+    return pred, target
 
 
 def evaluate(model, test_dl):
     summ = []
+    pred_sum = []
+    tar_sum = []
     model.eval()
 
     for i, (data_batch, label_batch) in enumerate(test_dl):
@@ -21,6 +37,9 @@ def evaluate(model, test_dl):
         summary_batch = {metric:metrics[metric](logits.data, label_batch.data)
                                  for metric in metrics}
 
+        pre_list, tar_list = list_get(logits.data, label_batch.data)
+        pred_sum.extend(pre_list)
+        tar_sum.extend(tar_list)
 
         # summary_batch['KLD'] = KLD.sum().data.item()
         summary_batch['entropy']  = y_xent.sum().data.item(),
@@ -28,15 +47,19 @@ def evaluate(model, test_dl):
         summ.append(summary_batch)
 
     mean_metrics = {metric:np.mean([x[metric] for x in summ]) for metric in summ[0]}
-    print(mean_metrics)
-    return mean_metrics
+    precision = precision_score(tar_sum, pred_sum, labels=labels, average='micro')
+    recall = recall_score(tar_sum, pred_sum, labels=labels, average='micro')
+    accuracytop1 = mean_metrics["accuracytop1"]
+    return "\naccuracy: {}\nprecision: {}\nrecall:{}\n".format(accuracytop1,  precision, recall)
 
 
 if __name__ == '__main__':
-    train_folder_path = '../stft/freq_ten_entropy_png'
-    test_folder_path = '../stft/testdl'
+    ratio = 0.01
+    resolution = 224
+    train_folder_path = '../stft/freq_ten_entropy_png/{}/{}'.format(ratio, resolution)
+    test_folder_path = '../stft/testdl/{}/{}'.format(ratio, resolution)
     num_classes = 4
-    load_dir = 'model'
+    load_dir = 'model/{}/{}'.format(ratio, resolution)
 
     model = DenseNet(growth_rate=32, block_config=(6, 12, 24, 16),
                      num_init_features=64, bn_size=4, drop_rate=0.3, num_classes=num_classes)
@@ -57,10 +80,20 @@ if __name__ == '__main__':
                                           batch_size=16,
                                           shuffle=False,
                                           num_workers=1,
-                                          drop_last=False)
+                                          drop_last=True)
 
     load_checkpoint(load_dir + '/best.pth.tar', model)
 
     mean_metrics = evaluate(model, train_dl)
+    eval_result = "train_dataset: " + mean_metrics
     mean_metrics = evaluate(model, test_dl)
+    eval_result = eval_result + "test_dataset: " + mean_metrics
+
+    eval_save_path = "./eval_results/{}_{}.txt".format(ratio, resolution)
+
+    with open(eval_save_path, 'w') as f:
+        f.write(eval_result)
+
+
+
 

@@ -1,0 +1,8 @@
+train_dataset: 
+accuracy: 0.990249060150376
+precision: 1.0
+recall:0.9870034970509943
+test_dataset: 
+accuracy: 0.9744674185463659
+precision: 1.0
+recall:0.9659636667362707
